@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>quiz.py — Chapter 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0B1220;
+    --bg-panel:#121A2B;
+    --bg-editor:#0E1626;
+    --border:#1F2A40;
+    --py-blue:#4B8BBE;
+    --py-yellow:#FFD43B;
+    --text:#DCE4EE;
+    --text-muted:#7D8BA3;
+    --add-bg:#062d17;
+    --add-border:#238636;
+    --add-text:#3fb950;
+    --rm-bg:#3a0d10;
+    --rm-border:#da3633;
+    --rm-text:#f85149;
+    --gutter:#4C5A72;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg-deep);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(75,139,190,0.12), transparent 45%),
+      radial-gradient(circle at 85% 100%, rgba(255,212,59,0.06), transparent 40%);
+    color:var(--text);
+    font-family:'Inter', system-ui, sans-serif;
+    min-height:100vh;
+    padding:32px 16px 64px;
+  }
+  .window{
+    max-width:760px;
+    margin:0 auto;
+    background:var(--bg-editor);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,0.45);
+  }
+  .titlebar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 14px;
+    background:var(--bg-panel);
+    border-bottom:1px solid var(--border);
+  }
+  .dots{display:flex;gap:7px;flex-shrink:0;}
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot.red{background:#FF5F57;}
+  .dot.yellow{background:#FEBC2E;}
+  .dot.green{background:#28C840;}
+  .tab{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--text-muted);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .tab b{color:var(--text);font-weight:600;}
+  .badge{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:100px;
+    border:1px solid var(--border);
+    background:var(--bg-deep);
+    color:var(--text-muted);
+    white-space:nowrap;
+    transition:all .25s ease;
+  }
+  .badge.live{color:var(--py-yellow);border-color:rgba(255,212,59,0.35);}
+  .badge.pass{color:var(--add-text);border-color:var(--add-border);background:var(--add-bg);}
+
+  .header{
+    padding:28px 28px 8px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--py-yellow);
+    letter-spacing:.06em;
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:'JetBrains Mono', monospace;
+    font-size:22px;
+    margin:0 0 6px;
+    color:var(--text);
+  }
+  .sub{color:var(--text-muted);font-size:14px;margin:0 0 20px;line-height:1.5;}
+
+  .qwrap{border-top:1px solid var(--border);}
+  .q{
+    display:flex;
+    border-bottom:1px solid var(--border);
+  }
+  .gutter{
+    width:44px;
+    flex-shrink:0;
+    text-align:right;
+    padding:20px 10px 20px 0;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--gutter);
+    background:rgba(255,255,255,0.015);
+    border-right:1px solid var(--border);
+    user-select:none;
+  }
+  .qbody{padding:20px 20px 20px 18px;flex:1;min-width:0;}
+  .comment{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--text-muted);
+    margin:0 0 6px;
+  }
+  .prompt{
+    font-size:15px;
+    font-weight:500;
+    margin:0 0 14px;
+    line-height:1.5;
+  }
+  .opts{display:flex;flex-direction:column;gap:8px;}
+  .opt{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-left:3px solid var(--border);
+    border-radius:6px;
+    padding:10px 12px;
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:13.5px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:var(--py-blue);background:#152238;}
+  .opt:focus-visible{outline:2px solid var(--py-yellow);outline-offset:2px;}
+  .opt-key{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    font-weight:700;
+    color:var(--py-blue);
+    flex-shrink:0;
+    margin-top:1px;
+  }
+  .opt:disabled{cursor:default;}
+  .opt.correct{
+    background:var(--add-bg);
+    border-color:var(--add-border);
+    border-left-color:var(--add-border);
+  }
+  .opt.correct .opt-key{color:var(--add-text);}
+  .opt.correct::before{content:"+ ";color:var(--add-text);font-family:'JetBrains Mono',monospace;}
+  .opt.wrong{
+    background:var(--rm-bg);
+    border-color:var(--rm-border);
+    border-left-color:var(--rm-border);
+  }
+  .opt.wrong .opt-key{color:var(--rm-text);}
+  .opt.wrong::before{content:"- ";color:var(--rm-text);font-family:'JetBrains Mono',monospace;}
+  .opt.dim{opacity:.45;}
+
+  .console{
+    display:none;
+    margin-top:12px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    line-height:1.6;
+    background:var(--bg-deep);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:12px 14px;
+  }
+  .console.show{display:block;}
+  .console .line-ok{color:var(--add-text);}
+  .console .line-bad{color:var(--rm-text);}
+  .console .explain{color:var(--text-muted);margin-top:4px;font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;}
+
+  .footer{
+    padding:26px 28px 30px;
+    border-top:1px solid var(--border);
+    background:var(--bg-panel);
+  }
+  .result-title{
+    font-family:'JetBrains Mono', monospace;
+    font-size:16px;
+    margin:0 0 6px;
+  }
+  .result-sub{color:var(--text-muted);font-size:13.5px;margin:0 0 16px;}
+  .bar{
+    height:8px;
+    border-radius:100px;
+    background:var(--border);
+    overflow:hidden;
+    margin-bottom:8px;
+  }
+  .bar-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--py-blue), var(--py-yellow));
+    transition:width .4s ease;
+  }
+  .reset{
+    margin-top:16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--bg-deep);
+    background:var(--py-yellow);
+    border:none;
+    border-radius:6px;
+    padding:9px 14px;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .reset:hover{filter:brightness(1.06);}
+
+  @media (max-width:480px){
+    body{padding:16px 8px 48px;}
+    .header{padding:22px 18px 6px;}
+    .qbody{padding:16px 14px 16px 12px;}
+    .gutter{width:32px;font-size:11px;padding:16px 6px 16px 0;}
+    .footer{padding:20px 18px 24px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="dots">
+      <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    </div>
+    <div class="tab">📄 <b>quiz.py</b> — chapter_1</div>
+    <div class="badge live" id="scoreBadge">0 / 10 passing</div>
+  </div>
+
+  <div class="header">
+    <p class="eyebrow"># review</p>
+    <h1>Chapter 1 — Comments, Escape Sequences &amp; print()</h1>
+    <p class="sub">Answer each question below. Right answers land like an added line, wrong ones like a removed one — just like reviewing a diff.</p>
+  </div>
+
+  <div class="qwrap" id="quiz"></div>
+
+  <div class="footer">
+    <p class="result-title" id="resultTitle">0 of 10 checks passing</p>
+    <p class="result-sub" id="resultSub">Answer every question to run the full suite.</p>
+    <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+    <button class="reset" id="resetBtn" style="display:none;">↺ re-run quiz</button>
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    comment: "# Q1 — comments",
+    prompt: "What is a comment in Python?",
+    options: [
+      "A line of code that always executes first",
+      "Non-executable text used to explain code, ignored by the interpreter",
+      "A special type of variable",
+      "A required part of every script"
+    ],
+    correct: 1,
+    explain: "Comments are non-executable text lines used to explain code, and the interpreter ignores them completely during execution."
+  },
+  {
+    comment: "# Q2 — single-line comments",
+    prompt: "Where does a single-line comment start, and where is it placed?",
+    options: [
+      "With //, at the end of the file",
+      "With #, on a new line above the code",
+      "With triple quotes, inside the code",
+      "With --, after the code"
+    ],
+    correct: 1,
+    explain: "Single-line comments start with #, and everything after it on that line is ignored; they're placed on their own line above the code."
+  },
+  {
+    comment: "# Q3 — inline comments",
+    prompt: "What's the rule for placing an inline comment?",
+    options: [
+      "It must be on its own separate line",
+      "It must be separated from the code by at least two spaces",
+      "It must start with //",
+      "It can touch the code with no spacing"
+    ],
+    correct: 1,
+    explain: "Inline comments sit on the same line as a code statement, separated by at least two spaces."
+  },
+  {
+    comment: "# Q4 — multi-line comments",
+    prompt: "Since Python has no dedicated multi-line comment syntax, what's 'Method B' for faking one?",
+    options: [
+      "Wrapping the block in /* */",
+      "Using unassigned triple-quoted strings, since Python ignores literal strings not assigned to a variable",
+      "Putting ## at the start of the block",
+      "Using <!-- -->"
+    ],
+    correct: 1,
+    explain: "Method B uses unassigned triple quotes — Python ignores literal strings if they aren't assigned to a variable."
+  },
+  {
+    comment: "# Q5 — escape sequences",
+    prompt: "What is an escape sequence?",
+    options: [
+      "A way to exit a running program",
+      "A combination of characters starting with \\ that tells the interpreter to treat the following text as a special instruction, not a literal string",
+      "A type of Python error",
+      "A comment that spans multiple lines"
+    ],
+    correct: 1,
+    explain: "An escape sequence starts with a backslash and signals special treatment of the characters that follow it."
+  },
+  {
+    comment: "# Q6 — escape sequences",
+    prompt: "What does \\n do inside a string?",
+    options: [
+      "Inserts a horizontal tab",
+      "Inserts a new line",
+      "Inserts a literal backslash",
+      "Inserts nothing, it's ignored"
+    ],
+    correct: 1,
+    explain: "\\n inserts a new line — e.g. print(\"Hello\\nWorld\") prints Hello and World on separate lines."
+  },
+  {
+    comment: "# Q7 — escape sequences",
+    prompt: "What does \\t do inside a string?",
+    options: [
+      "Inserts a tab character (horizontal spacing)",
+      "Inserts a new line",
+      "Inserts a quote mark",
+      "Deletes the previous character"
+    ],
+    correct: 0,
+    explain: "\\t inserts a horizontal tab."
+  },
+  {
+    comment: "# Q8 — escape sequences",
+    prompt: "How do you insert a literal backslash into a string?",
+    options: ["\\n", "\\\\", "\\t", "//"],
+    correct: 1,
+    explain: "\\\\ inserts a literal backslash — e.g. print(\"C:\\\\Users\") outputs C:\\Users."
+  },
+  {
+    comment: "# Q9 — print() parameters",
+    prompt: "In print(), what is the default value of the sep parameter?",
+    options: [
+      "An empty string",
+      "A single space (' ')",
+      "A newline ('\\n')",
+      "A comma"
+    ],
+    correct: 1,
+    explain: "sep defaults to a single space and controls how printed values are separated from each other."
+  },
+  {
+    comment: "# Q10 — print() parameters",
+    prompt: "In print(), what is the default value of the end parameter?",
+    options: [
+      "A single space",
+      "A newline ('\\n')",
+      "An empty string",
+      "sys.stdout"
+    ],
+    correct: 1,
+    explain: "end defaults to '\\n', which is why each print() call normally starts on a new line."
+  }
+];
+
+const KEYS = ["A","B","C","D","E","F"];
+let answered = new Array(QUESTIONS.length).fill(null);
+
+function render(){
+  const quiz = document.getElementById('quiz');
+  quiz.innerHTML = "";
+  QUESTIONS.forEach((q, qi) => {
+    const row = document.createElement('div');
+    row.className = 'q';
+
+    const gutter = document.createElement('div');
+    gutter.className = 'gutter';
+    gutter.textContent = String(qi + 1).padStart(2,'0');
+    row.appendChild(gutter);
+
+    const body = document.createElement('div');
+    body.className = 'qbody';
+
+    const comment = document.createElement('p');
+    comment.className = 'comment';
+    comment.textContent = q.comment;
+    body.appendChild(comment);
+
+    const prompt = document.createElement('p');
+    prompt.className = 'prompt';
+    prompt.textContent = q.prompt;
+    body.appendChild(prompt);
+
+    const opts = document.createElement('div');
+    opts.className = 'opts';
+
+    q.options.forEach((optText, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.innerHTML = '<span class="opt-key">' + KEYS[oi] + '</span><span>' + optText + '</span>';
+      btn.addEventListener('click', () => selectAnswer(qi, oi));
+      opts.appendChild(btn);
+    });
+    body.appendChild(opts);
+
+    const console_ = document.createElement('div');
+    console_.className = 'console';
+    console_.id = 'console-' + qi;
+    body.appendChild(console_);
+
+    row.appendChild(body);
+    quiz.appendChild(row);
+  });
+}
+
+function selectAnswer(qi, oi){
+  if(answered[qi] !== null) return;
+  answered[qi] = oi;
+
+  const q = QUESTIONS[qi];
+  const buttons = document.querySelectorAll('.q')[qi].querySelectorAll('.opt');
+  buttons.forEach((b, i) => {
+    b.disabled = true;
+    if(i === q.correct) b.classList.add('correct');
+    else if(i === oi) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+
+  const isCorrect = oi === q.correct;
+  const console_ = document.getElementById('console-' + qi);
+  console_.classList.add('show');
+  console_.innerHTML =
+    '<div class="' + (isCorrect ? 'line-ok' : 'line-bad') + '">' +
+    (isCorrect ? '>>> assert answer == expected  # passed' : '>>> assert answer == expected  # failed') +
+    '</div>' +
+    '<div class="explain">' + q.explain + '</div>';
+
+  updateScore();
+}
+
+function updateScore(){
+  const done = answered.filter(a => a !== null).length;
+  const correct = answered.reduce((sum, a, i) => sum + (a === QUESTIONS[i].correct ? 1 : 0), 0);
+
+  const badge = document.getElementById('scoreBadge');
+  badge.textContent = correct + ' / ' + QUESTIONS.length + ' passing';
+  badge.className = 'badge' + (done === QUESTIONS.length ? ' pass' : ' live');
+
+  document.getElementById('resultTitle').textContent = correct + ' of ' + QUESTIONS.length + ' checks passing';
+  document.getElementById('barFill').style.width = (done / QUESTIONS.length * 100) + '%';
+
+  const sub = document.getElementById('resultSub');
+  if(done < QUESTIONS.length){
+    sub.textContent = (QUESTIONS.length - done) + ' question(s) left to answer.';
+  } else if(correct === QUESTIONS.length){
+    sub.textContent = 'All checks passed. Chapter 1 merged. 🐍';
+  } else {
+    sub.textContent = 'Suite finished with ' + (QUESTIONS.length - correct) + ' failing check(s) — review the red lines above.';
+  }
+
+  document.getElementById('resetBtn').style.display = done === QUESTIONS.length ? 'inline-block' : 'none';
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  answered = new Array(QUESTIONS.length).fill(null);
+  render();
+  updateScore();
+});
+
+render();
+updateScore();
+</script>
+
+</body>
+</html>

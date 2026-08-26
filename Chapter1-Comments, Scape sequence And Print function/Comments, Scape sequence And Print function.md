@@ -4,37 +4,34 @@
 Comments are non-executable text lines used to explain code, which the Python interpreter completely ignores during execution.
 
 ## #Types of Comments:-  
-1. **Single-Line Comments:** 
+### 1. Single-Line Comments: 
 - Start with a hash symbol ( # ).
 - Everything after the # on that line is ignored.
 - Placed on a new line above the code.
 
-### PYTHON
+*PYTHON*
 ```Python
 #calculate the area of a circle
 Radius = 5
 Area = 3.14*( radius**2)
 ```
 
-2. **Inline Comments:** 
+### 2. Inline Comments:
 - Placed on the same line as a code statement.
 - Separated by at least two spaces from the code.
 - Used for quick, same-line context.
 
-### PYTHON
+*PYTHON*
 ```Python
 Border-width = 20  #Measured in pi.
 ```
 
-3. **Multi-Line Comments:** 
+### 3. Multi-Line Comments:
 Python has no dedicated syntax for multi-line comments.
-- Method A: Insert a # at the beginning of each consecutive line.
-- Method B: Use unassigned triple quotes ( “”” or ‘’’ ). Python ignores literal strings if they are not assigned to a variable.
+- **Method A:** Insert a # at the beginning of each consecutive line.
+- **Method B:** Use unassigned triple quotes ( “”” or ‘’’ ). Python ignores literal strings if they are not assigned to a variable.
 
-
-
-
-### PYTHON
+*PYTHON*
 ```Python
 #Method A: Standard way
 #This script processes user logs
@@ -56,31 +53,31 @@ An escape sequence is a combination of characters starting with a backslash    (
 
 | Eg | Code | Output |
 | :--- | :--- | :--- |
-| `\n` | `print("Hello\nWorld")` | Hello<br>World |
+| -> | `print("Hello\nWorld")` | Hello<br>World |
  
 2. \t → Inserts a horizontal tab.
 
 | Eg | Code | Output |
 | :--- | :--- | :--- |
-| `\n` | `print(“A/tB”)` | A B |
+| -> | `print(“A\tB”)` | A B |
  
 3. \\ → Inserts a literal backslash.
 
 | Eg | Code | Output |
 | :--- | :--- | :--- |
-| `\n` | `print(“C:\\Users”)` | C:\Users |
+| -> | `print(“C:\\Users”)` | C:\Users |
 
 4. \’ → Inserts a single quote.
 
 | Eg | Code | Output |
 | :--- | :--- | :--- |
-| `\n` | `print(“It\’s code”)` | It’s code |
+| -> | `print(“It\’s code”)` | It’s code |
 
 5. \” → Inserts a double quote.
 
 | Eg | Code | Output |
 | :--- | :--- | :--- |
-| `\n` | `print(“She said \”Hi\”.”)` | She said “Hi”. |
+| -> | `print(“She said \”Hi\”.”)` | She said “Hi”. |
 
 ## Print() Function:-
 
