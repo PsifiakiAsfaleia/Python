@@ -26,3 +26,12 @@ In Python, a module is simply a **file containing python code** ( with a .py ext
 1. **Built in Modules:** Built in Modules are preinstalled with python.
 2. **External modules:** External Modules need to be installed using pip or conda.
 
+## [Interactive Quiz>>](https://psifiakiasfaleia.github.io/Python/Chapter0-Introduction/Quiz for Chapter0.html)
+
+## [Next Chapter>>](https://psifiakiasfaleia.github.io/Python/Chapter1-Comments, Scape sequence And Print function/Comments, Scape sequence And Print function.md)
+
+## Bonus task (hands-on, not multiple choice):
+Open a terminal, run pip install requests to install an external module, then write a tiny script that:
+
+1. Imports the built-in math module and prints math.sqrt(49)
+2. Imports requests (the one you just installed) and prints requests.__version__
